@@ -6,42 +6,42 @@ let app = express();
 app.set('view engine', 'ejs');
 
 
+// top-level middleware
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+
 //routes
-
-
-
 app.get('/', (req, res) => {   //get只允許get方式來拜訪,
   // res.send(`<h2>泥好</h2>`)
-
   res.render('main', { name: 'Kunda' });
+});
 
-})
-
-app.get('/sales-json',(req,res)=>{
+app.get('/sales-json', (req, res) => {
   const sales = require(__dirname + '/data/sales')
   console.log(sales)
-  res.render('sales-json',{sales})
-
-})
+  res.render('sales-json', { sales })
+});
 
 app.get('/json-test', (req, res) => {   //res.end(),res.send,res.render,res.json只能擇一
-
   res.json({ name: '小新', age: 30 })
+});
 
-})
-
-app.get('/try-qs',(req,res)=>{
-
+app.get('/try-qs', (req, res) => {
   res.json(req.query);
+});
 
-})
 
-const urlencodeParser = express.urlencoded({extended:false});
-app.post('/try-post',urlencodeParser,(req,res)=>{
-
+app.post('/try-post', (req, res) => {
   res.json(req.body);
+});
 
-})
+app.get('/try-post-form', (req, res) => {
+  res.render('try-post-form');
+});
+app.post('/try-post-form', (req, res) => {
+  res.render('try-post-form', req.body);
+});
 
 
 app.use(express.static('public'));//使用靜態內容的資料夾,已經設定成根目錄
