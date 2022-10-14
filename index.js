@@ -1,5 +1,9 @@
 require('dotenv').config()
 const express = require('express');
+// const multer = require('multer');
+// const upload = multer({ dest: 'tmp_uploads' });
+const upload = require(__dirname + '/modules/upload-img')
+const fs = require('fs').promises;
 
 let app = express();
 
@@ -42,6 +46,41 @@ app.get('/try-post-form', (req, res) => {
 app.post('/try-post-form', (req, res) => {
   res.render('try-post-form', req.body);
 });
+
+
+app.post('/try-upload', upload.single('avatar'), async (req, res) => {
+  res.json(req.file);
+
+  /* 
+  if (req.file && req.file.originalname) {
+    await fs.rename(req.file.path, `public/imgs/${req.file.originalname}`);  //rename(舊路徑,新路徑)
+    res.json(req.file);
+  }else{
+    res.json({msg:'檔案沒有上傳'});
+  }
+  */
+
+})
+
+app.post('/try-upload2', upload.array('photos'), async (req, res) => {
+  res.json(req.files);
+
+})
+
+app.get('/my-params1/:action/:id', (req, res)=>{
+  res.json(req.params);
+  });
+
+app.get(/^\/m\/09\d{2}-?\d{3}-?\d{3}$/i,(req,res)=>{
+  let u = req.url.slice(3);
+  u= u.split('?')[0];
+  u=u.split('-').join('');
+  res.json({mobile:u});
+
+})
+
+
+app.use('/admin2',require(__dirname + '/routes/admin2'))
 
 
 app.use(express.static('public'));//使用靜態內容的資料夾,已經設定成根目錄
