@@ -86,7 +86,7 @@ const myMiddle = (req,res,next)=>{
 
 };
 
-app.get('/try-middle',myMiddle,(req,res)=>{
+app.get('/try-middle',[myMiddle],(req,res)=>{  //多個middleware加陣列
   res.json(res.locals)
 })
 
