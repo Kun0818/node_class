@@ -79,6 +79,17 @@ app.get(/^\/m\/09\d{2}-?\d{3}-?\d{3}$/i,(req,res)=>{
 
 })
 
+const myMiddle = (req,res,next)=>{
+  res.locals={...res.locals,kunda:'哈囉'};
+  res.locals.derrr=123;
+  next()
+
+};
+
+app.get('/try-middle',myMiddle,(req,res)=>{
+  res.json(res.locals)
+})
+
 
 app.use('/admin2',require(__dirname + '/routes/admin2'))
 
