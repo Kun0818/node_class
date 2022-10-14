@@ -6,7 +6,10 @@ const { Cookie } = require('express-session');
 const upload = require(__dirname + '/modules/upload-img');
 const fs = require('fs').promises;
 const session = require('express-session');
+const MysqlStore = require('express-mysql-session')(session);
 const moment = require('moment-timezone');
+const db = require(__dirname + '/modules/db_connect2');
+const sessionStore = new MysqlStore({}, db);
 
 let app = express();
 
@@ -18,8 +21,9 @@ app.use(session({
   saveUninitialized: false,
   resave: false,
   secret: 'qazxcvbnm',
+  store: sessionStore,
   cookie: {
-    maxAge: 1000
+    maxAge: 10000
   }
 }))
 
@@ -111,14 +115,18 @@ app.get('/try-session', (req, res) => {
   res.json(req.session);
 });
 
-app.get('/try-date',(req,res)=>{
+app.get('/try-moment', (req, res) => {
   const m = moment();
 
   res.send({
-    m:m.format('YYYY-MM-DD HH:mm:ss')
+    m: m.format('YYYY-MM-DD HH:mm:ss')
   })
 
+})
 
+app.get('/try-db', async (req, res) => {
+  const [rows] = await db.query('SELECT * FROM address_book LIMIT 5')
+  res.json(rows)
 })
 
 
