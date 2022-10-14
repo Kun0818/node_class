@@ -6,7 +6,7 @@ const { Cookie } = require('express-session');
 const upload = require(__dirname + '/modules/upload-img');
 const fs = require('fs').promises;
 const session = require('express-session');
-
+const moment = require('moment-timezone');
 
 let app = express();
 
@@ -111,7 +111,15 @@ app.get('/try-session', (req, res) => {
   res.json(req.session);
 });
 
+app.get('/try-date',(req,res)=>{
+  const m = moment();
 
+  res.send({
+    m:m.format('YYYY-MM-DD HH:mm:ss')
+  })
+
+
+})
 
 
 //_________________________________________________________
