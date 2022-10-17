@@ -7,12 +7,12 @@ router.use((req, res, next) => {
 })
 
 
-async function getListData(req){
+async function getListData(req, res) {
 
   const perPage = 10;
   let page = +req.query.page || 1;
   if (page < 1) {
-    return res.redirect(req.baseUrl);
+    return res.redirect(req.baseUrl);  //api不應該轉向
   };
 
   let search = req.query.search ? req.query.search.trim() : '';
@@ -46,19 +46,19 @@ async function getListData(req){
 
   };
 
-  return { totalRows, totalPages, perPage, page, rows,search,query:req.query };
+  return { totalRows, totalPages, perPage, page, rows, search, query: req.query };
 
 }
 
 //CRUD
 
 router.get('/', async (req, res) => {
-  const data = await getListData(req);
+  const data = await getListData(req, res);
   res.render('address_book/list', data);
 })
 //查看api
 router.get('/api', async (req, res) => {
-  const data = await getListData(req);
+  const data = await getListData(req, res);
   res.json(data);
 })
 

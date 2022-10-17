@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/bootstrap.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.5/dayjs.min.js" integrity="sha512-Ot7ArUEhJDU0cwoBNNnWe487kjL5wAOsIYig8llY/l0P2TUFwgsAHVmrZMHsT8NGo+HwkjTJsNErS6QqIkBxDw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <title>Document</title>
+</head>
+
+<body>
+
+  <div class="container">
+    <form class="d-flex">
+      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
+      <button class="btn btn-outline-success" type="submit">Search</button>
+    </form>
+    <div class="row">
+      <div class="col page-container">
+
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col table-container">
+
+      </div>
+    </div>
+  </div>
+  <script src="/js/bootstrap.bundle.js"></script>
+  <script>
+
+    function renderPage({page,totalPages}) {
+      return `
+      <nav aria-label="Page navigation example">
+          <ul class="pagination">
+
+            <li class="page-item disabled">
+              <a class="page-link" href="?page=0">Previous</a>
+            </li>
+            ${Array(11).fill(1).map((ele, i) => {
+              const p = page-5 + i;
+              if(p < 1 || p > totalPages) return '';
+              return `
+                      <li class="page-item ${p === page ?'active' : ''}">
+                        <a class="page-link" href="?page=${p}">
+                          ${p}
+                        </a>
+                      </li>
+                      `
+            }).join('')
+              }
+            
+
+            <li class="page-item ">
+              <a class="page-link" href="?page=2">Next</a>
+            </li>
+
+          </ul>
+        </nav>
+      `
+    }
+
+    function renderTable({ rows }) {
+      return `
+      <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">姓名</th>
+              <th scope="col">手機</th>
+              <th scope="col">Email</th>
+              <th scope="col">生日</th>
+              <th scope="col">地址</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((ele) => {
+        return `
+                  <tr>
+                    <td>${ele.sid}</td>
+                    <td>${ele.name}</td>
+                    <td>${ele.mobile}</td>
+                    <td>${ele.email}</td>
+                    <td>${dayjs(ele.birthday).format('YYYY-MM-DD')}</td>
+                    <td>${ele.address}</td>
+                  </tr>`
+      }).join('')}
+          </tbody>
+        </table>
+      `
+    }
+    const search = location.search
+    fetch('/ab/api'+search)
+      .then(r => r.json())
+      .then(result => {
+        console.log(result);
+        document.querySelector('.table-container').innerHTML = renderTable(result);
+        document.querySelector('.page-container').innerHTML = renderPage(result);
+      });
+
+
+  </script>
+</body>
+
+</html>
