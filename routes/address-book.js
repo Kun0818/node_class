@@ -33,7 +33,8 @@ router.get('/', async (req, res) => {
 
   }
 
-  res.json({ totalRows, totalPages, perPage, page, rows });
+  //res.json({ totalRows, totalPages, perPage, page, rows });
+  res.render('address_book/list',{totalRows, totalPages, perPage, page, rows})
 })
 
 module.exports = router;
