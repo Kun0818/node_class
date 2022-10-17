@@ -6,14 +6,16 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/bootstrap.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.5/dayjs.min.js" integrity="sha512-Ot7ArUEhJDU0cwoBNNnWe487kjL5wAOsIYig8llY/l0P2TUFwgsAHVmrZMHsT8NGo+HwkjTJsNErS6QqIkBxDw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.5/dayjs.min.js"
+    integrity="sha512-Ot7ArUEhJDU0cwoBNNnWe487kjL5wAOsIYig8llY/l0P2TUFwgsAHVmrZMHsT8NGo+HwkjTJsNErS6QqIkBxDw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <title>Document</title>
 </head>
 
 <body>
 
   <div class="container">
-    <form class="d-flex">
+    <form class="d-flex" role="search" onsubmit="doSearch(event)">
       <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
       <button class="btn btn-outline-success" type="submit">Search</button>
     </form>
@@ -32,7 +34,7 @@
   <script src="/js/bootstrap.bundle.js"></script>
   <script>
 
-    function renderPage({page,totalPages}) {
+    function renderPage({ page, totalPages }) {
       return `
       <nav aria-label="Page navigation example">
           <ul class="pagination">
@@ -41,17 +43,17 @@
               <a class="page-link" href="?page=0">Previous</a>
             </li>
             ${Array(11).fill(1).map((ele, i) => {
-              const p = page-5 + i;
-              if(p < 1 || p > totalPages) return '';
-              return `
-                      <li class="page-item ${p === page ?'active' : ''}">
-                        <a class="page-link" href="?page=${p}">
+        const p = page - 5 + i;
+        if (p < 1 || p > totalPages) return '';
+        return `
+                      <li class="page-item ${p === page ? 'active' : ''}">
+                        <a class="page-link" href="javascript:gotoPage(${p})">
                           ${p}
                         </a>
                       </li>
                       `
-            }).join('')
-              }
+      }).join('')
+        }
             
 
             <li class="page-item ">
@@ -92,14 +94,68 @@
         </table>
       `
     }
-    const search = location.search
-    fetch('/ab/api'+search)
-      .then(r => r.json())
-      .then(result => {
-        console.log(result);
-        document.querySelector('.table-container').innerHTML = renderTable(result);
-        document.querySelector('.page-container').innerHTML = renderPage(result);
-      });
+
+
+    async function getData() {
+      let usp = new URLSearchParams(location.search);
+
+      const r = await fetch('/ab/api?' + usp.toString()); //整合fetch
+      const result = await r.json();
+
+      console.log(result);
+      document.querySelector('.table-container').innerHTML = renderTable(result);
+      document.querySelector('.page-container').innerHTML = renderPage(result);
+
+    }
+
+    const usp = new URLSearchParams(location.search);
+    if (usp.get('search')) document.forms[0].search.value = usp.get('search');
+    getData();
+
+    function doSearch(event) {
+      event.preventDefault();//不讓表單送出;
+
+      const f = event.currentTarget;
+      console.log({ search: f.search.value });
+
+      const usp = new URLSearchParams({ search: f.search.value });
+
+      history.pushState('', '', '?' + usp.toString());  //換網址不刷頁面
+      console.log(location.search);
+      getData()
+
+      // fetch('/ab/api'+location.search)
+      // .then(r => r.json())
+      // .then(result => {
+      //   console.log(result);
+      //   document.querySelector('.table-container').innerHTML = renderTable(result);
+      //   document.querySelector('.page-container').innerHTML = renderPage(result);
+      // });
+
+    }
+
+    function gotoPage(p) {
+
+      const usp = new URLSearchParams(location.search);
+      usp.set('page', p)
+
+      history.pushState('', '', '?' + usp.toString());  //換網址不刷頁面
+      console.log(location.search);
+
+      getData();
+
+      // fetch('/ab/api' + location.search)
+      //   .then(r => r.json())
+      //   .then(result => {
+      //     console.log(result);
+      //     document.querySelector('.table-container').innerHTML = renderTable(result);
+      //     document.querySelector('.page-container').innerHTML = renderPage(result);
+      //   });
+
+    }
+    window.addEventListener('popstate', () => {
+      getData();
+    })
 
 
   </script>
