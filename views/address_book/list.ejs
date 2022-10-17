@@ -4,6 +4,32 @@
     <div class="container">
       <div class="row">
         <div class="col">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination">
+
+              <li class="page-item <%= 1===page ? 'disabled' : ''  %>">
+                <a class="page-link" href="?page=<%= page-1 %> ">Previous</a>
+              </li>
+
+              <% for (let i=page-5 ; i<=page+5 ; i++) 
+                  if (i>=1 && i<=totalPages) {
+                %> 
+              <li class="page-item <%= i===page ? 'active' : ''  %>">
+                <a class="page-link" href="?page=<%= i %> "><%= i %></a>
+              </li>
+              <% } %> 
+
+              <li class="page-item <%= totalPages===page ? 'disabled' : ''%>">
+                <a class="page-link" href="?page=<%= page+1 %>">Next</a>
+              </li>
+
+            </ul>
+          </nav>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
           <table class="table table-striped">
             <thead>
               <tr>
@@ -31,7 +57,7 @@
                     <%= r.email %>
                   </td>
                   <td>
-                    <%= r.birthday %>
+                    <%= toDateString(r.birthday) %>
                   </td>
                   <td>
                     <%= r.address %>

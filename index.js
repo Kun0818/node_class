@@ -30,6 +30,15 @@ app.use(session({
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+app.use((req, res, next) => {
+  //自定義的template helper functions
+  res.locals.toDateString = (d) =>  moment(d).format('YYYY-MM-DD') ;
+  res.locals.toTimeString = (d) => moment(d).format('HH:mm:ss');
+
+  next();
+
+});
+
 
 //routes
 app.get('/', (req, res) => {   //get只允許get方式來拜訪,
@@ -155,7 +164,7 @@ app.get('/try-db-add2', async (req, res) => {
 
 })
 
-app.use('/ab',require(__dirname + '/routes/address-book'))
+app.use('/ab', require(__dirname + '/routes/address-book'))
 
 
 //_________________________________________________________
