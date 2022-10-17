@@ -6,16 +6,29 @@ router.use((req, res, next) => {
   next();
 })
 
-//CRUD
 
-router.get('/', async (req, res) => {
+async function getListData(req){
+
   const perPage = 10;
   let page = +req.query.page || 1;
   if (page < 1) {
     return res.redirect(req.baseUrl);
   };
 
-  const t_sql = "SELECT COUNT(1) totalRows FROM address_book";
+  let search = req.query.search ? req.query.search.trim() : '';
+  let where = `WHERE 1`;
+  if (search) {
+    where += ` AND 
+    (
+      \`name\` LIKE ${db.escape('%' + search + '%')}
+      OR
+      \`address\` LIKE ${db.escape('%' + search + '%')}
+    )
+    `;
+  };
+
+
+  const t_sql = `SELECT COUNT(1) totalRows FROM address_book ${where}`;
   const [[{ totalRows }]] = await db.query(t_sql);
 
   let totalPages = 0;
@@ -27,14 +40,26 @@ router.get('/', async (req, res) => {
       return res.redirect(`?page=${totalPages}`)
     };
 
-    const sql = `SELECT * FROM address_book ORDER BY sid DESC LIMIT ${(page - 1) * perPage}, ${perPage}`;
+    const sql = `SELECT * FROM address_book ${where} ORDER BY sid DESC LIMIT ${(page - 1) * perPage}, ${perPage}`;
 
     [rows] = await db.query(sql);
 
-  }
+  };
 
-  //res.json({ totalRows, totalPages, perPage, page, rows });
-  res.render('address_book/list',{totalRows, totalPages, perPage, page, rows})
+  return ('address_book/list', { totalRows, totalPages, perPage, page, rows,search,query:req.query });
+
+}
+
+//CRUD
+
+router.get('/', async (req, res) => {
+  const data = await getListData(req);
+  res.render('address_book/list', data);
+})
+//查看api
+router.get('/api', async (req, res) => {
+  const data = await getListData(req);
+  res.json(data);
 })
 
 module.exports = router;
