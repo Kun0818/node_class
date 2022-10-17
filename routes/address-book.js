@@ -46,7 +46,7 @@ async function getListData(req){
 
   };
 
-  return ('address_book/list', { totalRows, totalPages, perPage, page, rows,search,query:req.query });
+  return { totalRows, totalPages, perPage, page, rows,search,query:req.query };
 
 }
 
