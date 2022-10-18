@@ -57,8 +57,26 @@ router.get('/add', async (req, res) => {
 });
 
 router.post('/add', upload.none(), async (req, res) => {
-  res.json(req.body);
-  
+  // res.json(req.body);
+  const output = {
+    success: false,
+    code: 0,
+    error: {},
+    postData: req.body, //除錯用
+  };
+
+  const sql = "INSERT INTO `address_book`(`name`,`email`,`mobile`,`birthday`,`address`,`created_at`) VALUES (?,?,?,?,?,NOW())";
+
+  const [result] = await db.query(sql, [
+    req.body.name,
+    req.body.email,
+    req.body.mobile,
+    req.body.birthday || null,
+    req.body.address,
+  ]);
+
+  if (result.affectedRows) output.success = true;
+  res.json(output);
 })
 
 
