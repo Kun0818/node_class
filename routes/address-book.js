@@ -1,6 +1,8 @@
+const { render } = require('ejs');
 const express = require('express');
 const router = express.Router();
 const db = require(__dirname + '/../modules/db_connect2');
+const upload = require(__dirname + '/../modules/upload-img');
 
 router.use((req, res, next) => {
   next();
@@ -49,6 +51,21 @@ async function getListData(req, res) {
   return { totalRows, totalPages, perPage, page, rows, search, query: req.query };
 
 }
+
+router.get('/add', async (req, res) => {
+  res.render('address_book/add');
+});
+
+router.post('/add', upload.none(), async (req, res) => {
+  res.json(req.body);
+  
+})
+
+
+
+router.get('/item/:id', async (req, res) => {
+  //讀取單筆資料
+})
 
 //CRUD
 
